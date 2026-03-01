@@ -286,8 +286,8 @@ export default function TetrisVisualizer() {
 
     return (
         <div className="flex flex-col gap-6">
-            {}
-            <div className="flex flex-row items-center gap-4 bg-gray-800 p-4 rounded-lg">
+            { }
+            <div className="flex flex-wrap items-center gap-4 bg-gray-800 p-4 rounded-lg">
                 <label className="font-bold">Episodes:</label>
                 <input
                     type="number"
@@ -301,23 +301,23 @@ export default function TetrisVisualizer() {
                 >
                     Start Training
                 </button>
-                <span className={`ml-auto font-mono text-sm ${status.includes("Connected") || status.includes("Training") ? "text-emerald-400" : "text-amber-400"}`}>
+                <span className={`w-full sm:w-auto sm:ml-auto font-mono text-sm break-all ${status.includes("Connected") || status.includes("Training") ? "text-emerald-400" : "text-amber-400"}`}>
                     Status: {status}
                 </span>
             </div>
 
-            {}
-            <div className="flex flex-row gap-4 h-[800px]">
-                {}
-                <div className="flex flex-col gap-2 w-[300px]">
+            { }
+            <div className="flex flex-col xl:flex-row gap-4 xl:h-[800px]">
+                { }
+                <div className="flex flex-col gap-2 w-full xl:w-[300px] max-w-[300px] mx-auto xl:mx-0">
                     <canvas
                         ref={gameCanvasRef}
                         width={300}
                         height={600}
-                        className="rounded shadow-lg"
+                        className="rounded shadow-lg w-full h-auto bg-[#141414]"
                     />
                     {gameState && (
-                        <div className="bg-gray-800 p-4 rounded flex flex-col gap-1 text-sm font-mono mt-auto h-[192px]">
+                        <div className="bg-gray-800 p-4 rounded flex flex-col gap-1 text-sm font-mono mt-auto xl:h-[192px]">
                             <div>Score: {Math.floor(gameState.score)}</div>
                             <div>Lines: {gameState.lines}</div>
                             <div>Epsilon: {gameState.epsilon.toFixed(4)}</div>
@@ -327,15 +327,15 @@ export default function TetrisVisualizer() {
                     )}
                 </div>
 
-                {}
-                <div className="w-[800px] h-[800px] bg-black rounded shadow-lg overflow-hidden relative border border-gray-800">
-                    <div className="absolute top-2 w-full flex flex-row justify-between px-16 text-gray-400 font-mono text-xs">
+                { }
+                <div className="flex-1 w-full max-w-[800px] bg-black rounded shadow-lg overflow-hidden relative border border-gray-800 mx-auto xl:mx-0 aspect-square xl:aspect-auto xl:h-[800px]">
+                    <div className="absolute top-2 w-full flex flex-row justify-between px-4 sm:px-16 text-gray-400 font-mono text-xs z-10">
                         <span>Input</span>
                         <span>Hidden 1</span>
                         <span>Hidden 2</span>
                         <span>Output</span>
                     </div>
-                    <canvas ref={netCanvasRef} width={800} height={800} />
+                    <canvas ref={netCanvasRef} width={800} height={800} className="w-full h-full object-cover sm:object-contain" />
                 </div>
             </div>
         </div>
