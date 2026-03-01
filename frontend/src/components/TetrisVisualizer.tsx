@@ -43,7 +43,8 @@ export default function TetrisVisualizer() {
 
     const connectWebSocket = () => {
         setStatus("Connecting...");
-        const ws = new WebSocket("ws://localhost:8000/ws/train");
+        const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/ws/train";
+        const ws = new WebSocket(wsUrl);
 
         ws.onopen = () => setStatus("Connected - Ready to Train");
         ws.onclose = () => setStatus("Disconnected");
