@@ -100,6 +100,10 @@ class WebTetrisDQNTrainer(TetrisDQNTrainer):
         }
         await websocket.send_json(payload)
 
+@app.get("/")
+def health_check():
+    return {"status": "ok", "message": "Tetris DQN API is running."}
+
 @app.websocket("/ws/train")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
