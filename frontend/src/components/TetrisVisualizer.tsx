@@ -198,7 +198,7 @@ export default function TetrisVisualizer() {
         ctx.fillRect(0, 0, W, H);
 
         const layerSizes = [27, 128, 128, 5];
-        const displaySizes = [27, 32, 32, 5];
+        const displaySizes = [27, 128, 128, 5];
         const padX = 80;
         const padY = 30;
 
@@ -218,12 +218,13 @@ export default function TetrisVisualizer() {
         for (let l = 0; l < 3; l++) {
             const w = weights[l];     // shape: [out, in]
             const acts = activations[l];
-            const stride = (l === 1) ? 4 : 1;
+            const strideIn = displaySizes[l] < layerSizes[l] ? 4 : 1;
+            const strideOut = displaySizes[l + 1] < layerSizes[l + 1] ? 4 : 1;
             const srcPos = neuronPos[l];
             const dstPos = neuronPos[l + 1];
 
-            for (let out_i = 0; out_i < w.length; out_i += stride) {
-                for (let in_i = 0; in_i < w[0].length; in_i += stride) {
+            for (let out_i = 0; out_i < w.length; out_i += strideOut) {
+                for (let in_i = 0; in_i < w[0].length; in_i += strideIn) {
                     const weight = w[out_i][in_i];
                     const act = acts[in_i] || 0.0;
 
@@ -232,8 +233,8 @@ export default function TetrisVisualizer() {
                     const mag = Math.tanh(Math.abs(weight) * Math.abs(act) * 3.0);
                     if (mag < 0.1) continue;
 
-                    const src_d = w[0].length > 32 ? Math.floor(in_i / 4) : in_i;
-                    const dst_d = w.length > 32 ? Math.floor(out_i / 4) : out_i;
+                    const src_d = strideIn > 1 ? Math.floor(in_i / strideIn) : in_i;
+                    const dst_d = strideOut > 1 ? Math.floor(out_i / strideOut) : out_i;
 
                     if (src_d >= srcPos.length || dst_d >= dstPos.length) continue;
 
@@ -260,6 +261,9 @@ export default function TetrisVisualizer() {
             const acts = activations[l];
             const positions = neuronPos[l];
             const stride = displaySizes[l] < layerSizes[l] ? 4 : 1;
+            const currentLayerSize = displaySizes[l];
+            const boxSize = currentLayerSize > 64 ? 4 : 8;
+            const offset = boxSize / 2;
 
             positions.forEach((pos, i) => {
                 let act = 0;
@@ -279,7 +283,7 @@ export default function TetrisVisualizer() {
                     ctx.strokeRect(pos.x - 9, pos.y - 9, 18, 18);
                 } else {
                     ctx.fillStyle = `rgb(${brightness}, ${brightness}, ${brightness})`;
-                    ctx.fillRect(pos.x - 4, pos.y - 4, 8, 8);
+                    ctx.fillRect(pos.x - offset, pos.y - offset, boxSize, boxSize);
                 }
             });
         }
