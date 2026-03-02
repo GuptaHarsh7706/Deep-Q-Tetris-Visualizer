@@ -77,6 +77,48 @@ Episode 10/2000 | Score: 100.0 | Lines: 1 | Epsilon: 0.9950 | Buffer: 64/20000 |
 - GPU support (CUDA/MPS) is automatically detected and used if available
 - For visualization: Display capable of running Pygame windows
 
+## How It Works (Deep Q-Network)
+
+The agent learns to play Tetris using Reinforcement Learning, specifically a Deep Q-Network (DQN). Instead of hardcoded rules, the agent learns through trial and error—being rewarded for good moves and penalized for bad ones.
+
+### State Representation (Input)
+The neural network "sees" the game through a 27-dimensional feature vector:
+- **10 normalized column heights**: How tall each column is.
+- **1 normalized hole count**: Number of empty spaces buried under blocks.
+- **1 normalized bumpiness**: The variation in height between adjacent columns.
+- **1 normalized lines cleared**: Total lines cleared so far in the game.
+- **7-value one-hot vector**: The current falling piece type.
+- **7-value one-hot vector**: The next piece type.
+
+### Neural Network Architecture
+The brain of the agent is a multi-layer perceptron (MLP) built with PyTorch:
+- **Input Layer**: 27 neurons (the state vector)
+- **Hidden Layer 1**: 128 neurons (ReLU activation)
+- **Hidden Layer 2**: 128 neurons (ReLU activation)
+- **Output Layer**: 5 neurons (representing the Q-value/expected future reward for each possible action)
+
+### Actions (Output)
+The agent can choose 1 of 5 actions at any given step:
+1. Move Left
+2. Move Right
+3. Rotate
+4. Soft Drop
+5. Hard Drop
+
+### Reward System
+The agent optimizes for the highest expected reward based on this system:
+- **Line Clear**: `+1.0` * (lines_cleared^2)
+- **Adding a Hole**: `-0.5` per new hole
+- **Increasing Height**: `-0.3` per unit of height increase
+- **Increasing Bumpiness**: `-0.1` per unit of bumpiness increase
+- **Game Over**: `-1.0`
+- **Survival**: `+0.001` per step
+
+### Training Process
+1. **Experience Replay**: The agent stores its game experiences (State, Action, Reward, Next State, Game Over flag) in a memory buffer.
+2. **Epsilon-Greedy Exploration**: Early in training, the agent takes random actions (exploration) to learn how the game works. Over time, it relies more on its neural network (exploitation).
+3. **Q-Learning Update**: Periodically, the agent samples a random batch of past experiences and trains the neural network to better predict the long-term reward of its actions.
+
 ## Notes
 
 - The agent uses epsilon-greedy exploration (starts at 1.0, decays to 0.01)
